@@ -1,0 +1,62 @@
+org: glowingsoft
+app: rewardwee-express
+service: rewardwee
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  stage: dev
+  region: us-east-1
+  runtime: nodejs14.x
+  apiGateway:
+    binaryMediaTypes:
+      - '*/*'
+  
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - s3:*
+          Resource: '*' 
+
+plugins:
+  - serverless-offline
+  - serverless-deployment-bucket
+  - serverless-prune-plugin
+  - serverless-plugin-split-stacks
+  # - serverless-iam-roles-per-function
+
+package:
+  individually: false
+
+custom:
+  fileUploadBucketName: ${self:service}-bucket-${self:provider.stage}
+  prune:
+    automatic: true
+    number: 1
+  splitStacks:
+    nestedStackCount: 40 # Controls the number of created nested stacks
+    perFunction: false
+    perType: true
+    perGroupFunction: false
+
+
+functions:
+  # auth
+  signup:
+    handler: handler.api
+    events:
+      - http:
+          path: '/'
+          method: ANY
+          cors: true
+
+  login:
+    handler: handler.api
+    events:
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+
