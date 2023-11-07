@@ -136,8 +136,6 @@ const registerUser = asyncHandler(async (req, res) => {
       if (userExists.user_type == 2) {
         profile = await getProfile(userExists._id);
       }
-      console.log("profile ---------------->", userExists);
-
       //check if user created is employer or user_type == 1
       if (userExists.user_type == 1) {
         profile = await getProfile(userExists._id);
