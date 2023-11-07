@@ -55,7 +55,7 @@ app.use(cors());
 app.use("/auth", cors(), require("./backend/routes/userRoutes"));
 app.use("/countries", cors(), require("./backend/routes/countriesRoutes"));
 app.use("/uploadFile", cors(), require("./backend/routes/attachmentRoute"));
-app.use("/addLike", cors(), require("./backend/routes/profileLiked"));
+app.use("/", cors(), require("./backend/routes/profileLiked"));
 app.use("/file", cors(), require("./backend/routes/fileHandlingRouter"));
 app.use(
   "/conversation",

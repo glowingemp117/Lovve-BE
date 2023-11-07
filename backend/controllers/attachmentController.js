@@ -10,7 +10,6 @@ const {
 
 const addAttachment = asyncHandler(async (req, res) => {
   try {
-    console.log("attachment.................>", req.files);
     if (!req.files) {
       return res.status(400).json({ status: 400, message: "File is required" });
     }

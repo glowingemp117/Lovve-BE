@@ -7,15 +7,19 @@ const {
   verifyrequiredparams,
   sendNotification,
 } = require("../middleware/common");
+const mongoose = require("mongoose");
 
 const addLike = async (req, res) => {
   try {
-    const likedTo = req.body.likedTo; // User ID of the liked user
-    const likedBy = req.user;
-    const relationDetail = await RelationDetail.findOne({ likedBy, likedTo });
+    const { _id } = req.user;
+    const likedTo = req.body.id; // User ID of the liked user
+    const relationDetail = await RelationDetail.findOne({
+      likedBy: _id,
+      likedTo: new mongoose.Types.ObjectId(likedTo),
+    });
 
     if (!relationDetail) {
-      return { status: 404, message: "User  not found" };
+      return { status: 404, message: "User not found" };
     }
 
     if (relationDetail.liked) {
