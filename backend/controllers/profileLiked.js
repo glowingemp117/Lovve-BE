@@ -11,7 +11,7 @@ const {
 const addLike = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user;
-    const likedTo = req.body.id; // User ID of the liked user
+    const likedTo = req.body.id;
     const relationDetail = await RelationDetail.findOne({
       likedBy: _id,
       likedTo: likedTo,
