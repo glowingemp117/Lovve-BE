@@ -18,12 +18,12 @@ const successResponse = (
       status: statusCode,
       message: Message,
       total_pages: total_pages,
-      body: Body,
+      data: Body,
     });
   } else {
     return res
       .status(statusCode)
-      .json({ status: statusCode, message: Message, body: Body });
+      .json({ status: statusCode, message: Message, data: Body });
   }
 };
 const PrintError = (statusCode = 400, Message, res) => {
@@ -65,8 +65,8 @@ const verifyrequiredparams = (statusCode = 200, body, fields, res) => {
       // Required field(s) are missing or empty
       throw new Error(
         "Required field(s) " +
-        error_fields.slice(0, -2) +
-        " is missing or empty"
+          error_fields.slice(0, -2) +
+          " is missing or empty"
       );
     } else {
       return Promise.resolve();
@@ -137,16 +137,16 @@ const sendNotification = async (user_id, notification_obj) => {
   const resp = [];
   for (const device of devices) {
     let message = {};
-    if (device.device_id.length < 10) continue
+    if (device.device_id.length < 10) continue;
     if (device.device_type == "android") {
       message = {
         to: device.device_id,
         data: notification_obj,
       };
     } else if (device.device_type == "ios") {
-      notification_obj.sound = "default"
-      notification_obj.badge = 1,
-        notification_obj.body = notification_obj.message
+      notification_obj.sound = "default";
+      (notification_obj.badge = 1),
+        (notification_obj.body = notification_obj.message);
       message = {
         to: device.device_id,
         notification: notification_obj,
@@ -159,11 +159,11 @@ const sendNotification = async (user_id, notification_obj) => {
       type: notification_obj.type,
       status: notification_obj.status,
       color: notification_obj.color,
-      object: notification_obj.object
-    }
-    const notification_check = await Notifications.findOne(notificationSave)
+      object: notification_obj.object,
+    };
+    const notification_check = await Notifications.findOne(notificationSave);
     if (notification_check) continue;
-    fcm.send(message, function (err, response) { });
+    fcm.send(message, function (err, response) {});
     await Notifications.create(notificationSave);
   }
   // return { data: resp };

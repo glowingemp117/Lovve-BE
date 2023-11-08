@@ -1,8 +1,7 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-
-
-const AdminSettings = new mongoose.Schema({
+const AdminSettings = new mongoose.Schema(
+  {
     VAT: Number,
     NI: Number,
     faq: mongoose.Schema.Types.Mixed,
@@ -16,12 +15,14 @@ const AdminSettings = new mongoose.Schema({
     student_max_hours_daily: Number,
     max_hours_weekly: Number,
     max_hours_daily: Number,
-    min_hour_job:Number,
-    max_hour_job:Number,
-    rest_period:Number,
-    timeBetweenJobsMins:Number
-}, {
+    min_hour_job: Number,
+    max_hour_job: Number,
+    rest_period: Number,
+    timeBetweenJobsMins: Number,
+  },
+  {
     timestamps: true,
-})
+  }
+);
 
-module.exports = mongoose.model('admin_settings', AdminSettings);
+module.exports = mongoose.model("admin_settings", AdminSettings);

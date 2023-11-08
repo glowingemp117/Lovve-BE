@@ -1,70 +1,44 @@
-const mongoose = require('mongoose');
-
-const UserSchema = mongoose.Schema({
-    name: {
-        type: String,
-        required: [true, 'Please add a name'],
-    },
+const mongoose = require("mongoose");
+const UserSchema = new mongoose.Schema(
+  {
     email: {
-        type: String,
-        required: [true, 'Please add an email'],
-        unique: true
+      type: String,
+      required: true,
     },
-    mobile: {
-        type: String,
-        default: "",
+    name: { type: String, default: "" },
+    age: { type: Number, default: "0" },
+    country: { type: mongoose.Schema.Types.ObjectId, ref: "countries" },
+    gender: { type: String, default: "" },
+    selfie_id: { type: String, default: "" },
+    attachments: [{ type: mongoose.Schema.Types.ObjectId, ref: "attachments" }],
+    fcm_token: { type: String, default: "" },
+    device_type: { type: String, default: "" },
+    timezone: { type: String, default: "" },
+    user_type: { type: Number, default: 1 },
+    otp: { type: Number },
+    device_id: { type: String, default: "" },
+    new_user: { type: Boolean, default: false },
+    bio: { type: String, maxlength: 15 },
+    isVerify: { type: Boolean, default: false },
+    // Define otpAttempts as part of the user schema
+    otpAttempts: {
+      type: Number,
+      default: 0, // Initialize the count to 0
     },
-    telephone: {
-        type: String,
-        default: "",
-    },
-    user_type: {
-        type: Number,
-        default: 1
-    },
-    timezone: {
-        type: String,
-        default: "",
-    },
-    image: {
-        type: String,
-        default: "noImg.png",
-    },
-    reset_code: {
-        type: String,
-        default: "",
-    },
-    rating: {
-        type: String,
-        default: "",
-    },
-    status: {
-        type: Boolean,
-        default: true,
-    },
-    password: {
-        type: String,
-        required: [true, 'Please add a password'],
-    },
-    employer_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'users',
-        default: null
-    },
-    is_approved: {
-        type: String,
-        default: "0",
-    },
-    is_active: {
-        type: Boolean,
-        default: true,
-    },
-    admin_input: {
-        type: Boolean,
-        default: true,
-    }
-}, {
-    timestamps: true,
-})
 
-module.exports = mongoose.model("users", UserSchema)
+    // You can also define other properties like lastFailedAttempt and retryTimestamp here
+    lastFailedAttempt: {
+      type: Date,
+      default: null, // Initialize to null
+    },
+    retryTimestamp: {
+      type: Date,
+      default: null, // Initialize to null
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model("users", UserSchema);
