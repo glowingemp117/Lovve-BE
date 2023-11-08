@@ -185,13 +185,9 @@ const loginUser = asyncHandler(async (req, res) => {
     const newUser = new User({ email: email, otp: otp, new_user: true });
     await newUser.save();
   }
-  const accesstoken = generateToken(email);
-  const response = {
-    otp: otp,
-    message: "OTP code sent successfully",
-  };
+  // const accesstoken = generateToken(email);
 
-  return SuccessWithoutBody(200, response, res);
+  return SuccessWithoutBody(200, `Otp code sent succesfully${otp}`, res);
 });
 
 const verifyOtp = asyncHandler(async (req, res) => {
@@ -281,7 +277,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
             },
           },
         ]);
-        const accesstoken = generateToken(email);
+        const accesstoken = generateToken(user._id, user.name, user.email);
         return successResponse(
           200,
           "Logged in successfully",
