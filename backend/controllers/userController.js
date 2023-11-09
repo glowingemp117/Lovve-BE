@@ -136,6 +136,7 @@ const registerUser = asyncHandler(async (req, res) => {
       if (userExists.user_type == 2) {
         profile = await getProfile(userExists._id);
       }
+
       //check if user created is employer or user_type == 1
       if (userExists.user_type == 1) {
         profile = await getProfile(userExists._id);
@@ -183,7 +184,6 @@ const loginUser = asyncHandler(async (req, res) => {
     const newUser = new User({ email: email, otp: otp, new_user: true });
     await newUser.save();
   }
-  // const accesstoken = generateToken(email);
 
   return SuccessWithoutBody(200, `Otp code sent succesfully${otp}`, res);
 });
@@ -279,8 +279,10 @@ const verifyOtp = asyncHandler(async (req, res) => {
         return successResponse(
           200,
           "Logged in successfully",
-          aggregatedUserData,
-          accesstoken,
+          {
+            aggregatedUserData,
+            accesstoken,
+          },
           res
         );
       }
@@ -314,6 +316,38 @@ const resendOtp = asyncHandler(async (req, res) => {
   }
 
   return SuccessWithoutBody(200, "OTP code sent successfully", res);
+});
+
+const deleteAccount = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+
+    // Check if the user exists
+    const user = await User.findById(_id);
+
+    if (!user) {
+      return res.status(404).json({
+        status: 404,
+        message: "User not found",
+        data: null,
+      });
+    }
+
+    // Delete the user account
+    await User.findByIdAndDelete(_id);
+
+    return res.status(200).json({
+      status: 200,
+      message: "Account deleted successfully",
+      data: null,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
 });
 
 //home love
@@ -926,4 +960,5 @@ module.exports = {
   getAllUsers,
   verifyOtp,
   resendOtp,
+  deleteAccount,
 };

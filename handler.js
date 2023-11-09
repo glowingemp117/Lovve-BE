@@ -57,6 +57,12 @@ app.use("/countries", cors(), require("./backend/routes/countriesRoutes"));
 app.use("/uploadFile", cors(), require("./backend/routes/attachmentRoute"));
 app.use("/addLike", cors(), require("./backend/routes/profileLiked"));
 app.use("/support", cors(), require("./backend/routes/supportRoute"));
+app.use("/terms", cors(), require("./backend/routes/termsRoute"));
+app.use(
+  "/privacyPolicy",
+  cors(),
+  require("./backend/routes/privacyPolicyRoute")
+);
 app.use("/file", cors(), require("./backend/routes/fileHandlingRouter"));
 app.use(
   "/conversation",

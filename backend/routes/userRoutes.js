@@ -19,6 +19,7 @@ const {
   getAbout,
   verifyOtp,
   resendOtp,
+  deleteAccount,
 } = require("../controllers/userController");
 const { protect } = require("../middleware/authMiddleware");
 router
@@ -27,6 +28,7 @@ router
   .post("/resendOtp", resendOtp)
   .post("/verifyotp", verifyOtp)
   .put("/changepassword", protect, changePassword)
+  .delete("/deleteAccount", protect, deleteAccount)
   .post("/logout", protect, logout)
   .put("/forgotpassword", forgotpassword)
   .put("/validatepin", validatepin)
