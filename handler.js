@@ -8,15 +8,15 @@ const { errorHandler } = require("./backend/middleware/errorMiddleware");
 const db = require("./backend/config/db");
 const colors = require("colors");
 var busboy = require("connect-busboy");
-const fileUpload = require("express-fileupload");
+// const fileUpload = require("express-fileupload");
 var path = require("path");
 const morganBody = require("morgan-body");
 const fs = require("fs");
 var cron = require("node-cron");
 
 const Conversation = require("./backend/schemas/Conversations");
-app.use("/uploads", express.static("uploads"));
 const mongoose = require("mongoose");
+
 const {
   socketMongoPOST,
   getSocketUsingSocket_id,
@@ -26,11 +26,11 @@ const {
   sendNotificationUserOffline,
   getUserByUserId,
 } = require("./backend/controllers/socketController");
-app.use(
-  fileUpload({
-    createParentPath: true,
-  })
-);
+// app.use(
+//   fileUpload({
+//     createParentPath: true,
+//   })
+// );
 const moment = require("moment-timezone");
 // load db
 db();
@@ -40,10 +40,7 @@ const accessLogStream = fs.createWriteStream(
   { flags: "a" }
 );
 
-app.use(express.json());
-app.use(busboy());
-app.use(express.urlencoded({ extended: false }));
-app.use("/uploads", express.static("uploads"));
+// app.use(busboy());
 morganBody(app, {
   logAllReqHeader: true,
   maxBodyLength: 5000,
@@ -51,7 +48,11 @@ morganBody(app, {
 });
 
 app.use(cors());
+app.use(express.json({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.resolve("uploads")));
 
+<<<<<<< HEAD
 app.use("/auth", cors(), require("./backend/routes/userRoutes"));
 app.use("/countries", cors(), require("./backend/routes/countriesRoutes"));
 app.use("/uploadFile", cors(), require("./backend/routes/attachmentRoute"));
@@ -64,9 +65,17 @@ app.use(
   require("./backend/routes/privacyPolicyRoute")
 );
 app.use("/file", cors(), require("./backend/routes/fileHandlingRouter"));
+=======
+app.use("/auth", require("./backend/routes/userRoutes"));
+app.use("/countries", require("./backend/routes/countriesRoutes"));
+app.use("/uploadFile", require("./backend/routes/attachmentRoute"));
+app.use("/addLike", require("./backend/routes/profileLiked"));
+app.use("/support", require("./backend/routes/supportRoute"));
+app.use("/file", require("./backend/routes/fileHandlingRouter"));
+>>>>>>> 66f16d859353e9649e58115dd63eb1be0ba07232
 app.use(
   "/conversation",
-  cors(),
+
   require("./backend/routes/conversationRoutes")
 );
 app.use(errorHandler);
@@ -149,6 +158,7 @@ app.use((req, res, next) => {
 // server.listen(process.env.PORT_SOCKETIO, () => {
 //   console.log(`socketio connected on port: ${process.env.PORT_SOCKETIO}`);
 // });
+
 app.listen(process.env.PORT, () =>
   console.log(
     `Server listening in port ${process.env.PORT} url: http://localhost:${process.env.PORT}`
