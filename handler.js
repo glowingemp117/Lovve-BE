@@ -54,8 +54,14 @@ app.use(express.static(path.resolve("uploads")));
 
 app.use("/auth", cors(), require("./backend/routes/userRoutes"));
 app.use("/countries", cors(), require("./backend/routes/countriesRoutes"));
+<<<<<<< HEAD
 app.use("/uploadFile", require("./backend/routes/attachmentRoute"));
 app.use("/", cors(), require("./backend/routes/profileLiked"));
+=======
+app.use("/uploadFile", cors(), require("./backend/routes/attachmentRoute"));
+app.use("/addLike", cors(), require("./backend/routes/profileLiked"));
+app.use("/support", cors(), require("./backend/routes/supportRoute"));
+>>>>>>> 07224d79cb4fd1f0f3a93e0cf0f9b0f2e6414bc2
 app.use("/file", cors(), require("./backend/routes/fileHandlingRouter"));
 app.use(
   "/conversation",

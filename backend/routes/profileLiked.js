@@ -4,6 +4,6 @@ const { addLike } = require("../controllers/profileLiked"); // Import the contro
 const { protect } = require("../middleware/authMiddleware");
 
 // Add a like
-router.post("/addLike", protect, addLike);
+router.post("/", protect, addLike);
 
 module.exports = router;
