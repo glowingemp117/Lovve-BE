@@ -392,6 +392,47 @@ const getMatched = asyncHandler(async (req, res) => {
   }
 });
 
+const createMatch = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const likedTo = req.body.id;
+
+    const matchBy = await RelationDetail.findOne({
+      likedBy: _id,
+      likedTo: likedTo,
+      liked: true,
+      visited: true,
+    });
+
+    const matchTo = await RelationDetail.findOne({
+      likedBy: likedTo,
+      likedTo: _id,
+      liked: true,
+      visited: true,
+    });
+
+    if (!matchBy || !matchTo) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    // Update the documents only if they exist
+    await RelationDetail.updateOne(
+      { _id: matchBy._id },
+      { $set: { matched: true } }
+    );
+
+    await RelationDetail.updateOne(
+      { _id: matchTo._id },
+      { $set: { matched: true } }
+    );
+
+    return res.status(201).json({ message: "Match created successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 
 module.exports = {
@@ -400,5 +441,6 @@ module.exports = {
   getVisitor,
   getMatches,
   getMatched,
-  addVisted
+  addVisted,
+  createMatch
 };
