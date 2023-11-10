@@ -10,20 +10,26 @@ const {
 
 const addAttachment = asyncHandler(async (req, res) => {
   try {
-    if (!req.files) {
-      return res.status(400).json({ status: 400, message: "File is required" });
-    }
+    // if (!req.files) {
+    //   return res.status(400).json({ status: 400, message: "File is required" });
+    // }
 
-    // const file = req.file.path.toString();
+    const file = req.file.path.toString();
     // const { name, url, type } = req.body;
-    const filePath = req.file.path;
-    const attachment = new Attachment({
-      url: filePath,
-      type: "image",
+    // const filePath = req.file.path;
+    await Attachment.create({
+      url: file,
+      type: req.body.type,
     });
 
-    const savedAttachment = await attachment.save();
-    return successResponse(201, "Upload successfully", savedAttachment, res);
+    // const savedAttachment = await attachment.save();
+    return successResponse(
+      201,
+      "Upload successfully",
+      // savedAttachment,
+      "ok",
+      res
+    );
   } catch (error) {
     console.error("Error adding attachment:", error);
 
