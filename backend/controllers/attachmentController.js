@@ -13,16 +13,16 @@ const addAttachment = asyncHandler(async (req, res) => {
     // if (!req.files) {
     //   return res.status(400).json({ status: 400, message: "File is required" });
     // }
-
-    const file = req.file.path.toString();
+    const file = req.file;
     // const { name, url, type } = req.body;
     // const filePath = req.file.path;
     await Attachment.create({
-      url: file,
+      name: file.originalname,
+      url: file.path.toString(),
       type: req.body.type,
     });
 
-    // const savedAttachment = await attachment.save();
+    // const savedAttachment = await attachment.sa  e();
     return successResponse(
       201,
       "Upload successfully",

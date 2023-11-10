@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const relationSchema = new mongoose.Schema({
   likedBy: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
   likedTo: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
-  mached: {
+  matched: {
     type: Boolean,
 
     default: false,

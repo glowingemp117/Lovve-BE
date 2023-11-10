@@ -57,7 +57,6 @@ const registerUser = asyncHandler(async (req, res) => {
         "timezone",
         "user_type",
         "device_id",
-        "bio",
       ],
       res
     );
@@ -185,7 +184,7 @@ const loginUser = asyncHandler(async (req, res) => {
     await newUser.save();
   }
 
-  return SuccessWithoutBody(200, `Otp code sent succesfully${otp}`, res);
+  return SuccessWithoutBody(200, `Otp code sent succesfully ${otp}`, res);
 });
 
 const verifyOtp = asyncHandler(async (req, res) => {
@@ -430,7 +429,21 @@ async function getAllUsers(req, res) {
           path: "$likes",
         },
       },
+      {
+        $lookup: {
+          from: "relationdetails",
+          localField: "_id",
+          foreignField: "likedBy",
+          as: "relation_detail",
+        },
+      },
+      {
+        $unwind: {
+          path: "$relation_detail",
+        },
+      },
     ]);
+
     if (aggregatedUsers.length === 0) {
       return res.status(404).json({ status: 400, message: "No Data found" });
     }
@@ -456,11 +469,11 @@ async function getAllUsers(req, res) {
             type: attachment.type,
           })),
         },
-        // relation_details: {
-        //   matched: user.matched,
-        //   liked: user.liked,
-        //   visited: user.visited,
-        // },
+        relation_details: {
+          matched: user.relation_detail?.matched,
+          liked: user.relation_detail?.liked,
+          visited: user.relation_detail?.visited,
+        },
       })),
       meta: {
         current_page: page,
@@ -477,6 +490,204 @@ async function getAllUsers(req, res) {
     res.status(500).json({ message: "server error" });
   }
 }
+
+const getUserById = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.query.userId;
+
+    // Ensure the requested user ID is valid
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    const aggregatedUser = await User.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(userId) } },
+      {
+        $lookup: {
+          from: "attachments",
+          localField: "_id",
+          foreignField: "user_id",
+          as: "attachments",
+        },
+      },
+      {
+        $lookup: {
+          from: "countries",
+          localField: "country",
+          foreignField: "_id",
+          as: "country",
+        },
+      },
+      {
+        $unwind: {
+          path: "$country",
+        },
+      },
+      {
+        $lookup: {
+          from: "profilestatuses",
+          localField: "_id",
+          foreignField: "user_id",
+          as: "profile_stats",
+        },
+      },
+      {
+        $unwind: {
+          path: "$profile_stats",
+        },
+      },
+      {
+        $lookup: {
+          from: "likes",
+          localField: "_id",
+          foreignField: "user_id",
+          as: "likes",
+        },
+      },
+      {
+        $unwind: {
+          path: "$likes",
+        },
+      },
+      {
+        $lookup: {
+          from: "relationdetails",
+          localField: "_id",
+          foreignField: "likedBy",
+          as: "relation_detail",
+        },
+      },
+      {
+        $unwind: {
+          path: "$relation_detail",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
+
+    if (aggregatedUser.length === 0) {
+      return res.status(404).json({ status: 400, message: "User not found" });
+    }
+
+    const user = aggregatedUser[0];
+
+    const response = {
+      status: 200,
+      message: "Fetched user successfully",
+      data: {
+        id: user._id,
+        name: user.name,
+        age: user.age,
+        country: {
+          id: user.country._id,
+          name: user.country.name,
+          flag: user.country.flagUrl,
+        },
+        gender: user.gender,
+        selfie: user.selfie_id,
+        attachments: user.attachments.map((attachment) => ({
+          id: attachment._id,
+          name: attachment.name,
+          url: attachment.url,
+          type: attachment.type,
+        })),
+
+        relation_details: {
+          matched: user.relation_detail?.matched,
+          liked: user.relation_detail?.liked,
+          visited: user.relation_detail?.visited,
+        },
+      },
+    };
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+//love user profile
+const getLoginProfile = asyncHandler(async (req, response) => {
+  try {
+    const userId = req.user._id;
+    const user = await getProfile(userId);
+    if (!user) {
+      throw new Error("user not found");
+    }
+    return successResponse(
+      200,
+      "Login User Found Successfully",
+      user,
+      response
+    );
+  } catch (err) {
+    return PrintError(403, err.message, [], response, "FORBIDDEN");
+  }
+});
+
+const profileUpdate = asyncHandler(async (req, response) => {
+  try {
+    const { selfie_id, attachments } = req.body;
+
+    const userId = req.user._id;
+    const user = await getProfile(userId);
+
+    // if user not found throw error
+    if (!user) {
+      throw new Error("user not found");
+    } else {
+      const updateuser = await User.findByIdAndUpdate(
+        userId,
+        {
+          selfie_id: selfie_id,
+          attachments: attachments,
+        },
+        { new: true }
+      );
+      return successResponse(
+        200,
+        "Your profile has been updated successfully",
+        updateuser,
+        response,
+        "SUCCESS"
+      );
+    }
+  } catch (err) {
+    return PrintError(403, err.message, [], response, "FORBIDDEN");
+  }
+});
+
+//update configuration
+const updateConfiguration = asyncHandler(async (req, res) => {
+  try {
+    const { _id } = req.user; // Assuming you include userId in the token during authentication
+    const { fcm_token, device_type, timezone } = req.body;
+
+    await verifyrequiredparams(
+      400,
+      req.body,
+      ["fcm_token", "device_type", "timezone"],
+      res
+    );
+    // Update user document
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      { fcm_token, device_type, timezone },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // res.json(updatedUser);
+    return SuccessWithoutBody(200, "update successfully", res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 // @desc  Login
 // @route  auth/login
@@ -961,4 +1172,8 @@ module.exports = {
   verifyOtp,
   resendOtp,
   deleteAccount,
+  getLoginProfile,
+  profileUpdate,
+  getUserById,
+  updateConfiguration,
 };

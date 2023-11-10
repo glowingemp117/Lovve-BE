@@ -50,29 +50,18 @@ morganBody(app, {
 app.use(cors());
 app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.resolve("uploads")));
+app.use(express.static(path.resolve("backend/uploads")));
 
-<<<<<<< HEAD
-app.use("/auth", cors(), require("./backend/routes/userRoutes"));
-app.use("/countries", cors(), require("./backend/routes/countriesRoutes"));
-app.use("/uploadFile", cors(), require("./backend/routes/attachmentRoute"));
-app.use("/addLike", cors(), require("./backend/routes/profileLiked"));
-app.use("/support", cors(), require("./backend/routes/supportRoute"));
-app.use("/terms", cors(), require("./backend/routes/termsRoute"));
-app.use(
-  "/privacyPolicy",
-  cors(),
-  require("./backend/routes/privacyPolicyRoute")
-);
-app.use("/file", cors(), require("./backend/routes/fileHandlingRouter"));
-=======
 app.use("/auth", require("./backend/routes/userRoutes"));
 app.use("/countries", require("./backend/routes/countriesRoutes"));
 app.use("/uploadFile", require("./backend/routes/attachmentRoute"));
-app.use("/addLike", require("./backend/routes/profileLiked"));
+app.use("/", require("./backend/routes/profileLiked"));
+app.use("/", require("./backend/routes/reportUserRoute"));
 app.use("/support", require("./backend/routes/supportRoute"));
+app.use("/privacyPolicy", require("./backend/routes/privacyPolicyRoute"));
+app.use("/terms", require("./backend/routes/termsRoute"));
+
 app.use("/file", require("./backend/routes/fileHandlingRouter"));
->>>>>>> 66f16d859353e9649e58115dd63eb1be0ba07232
 app.use(
   "/conversation",
 
