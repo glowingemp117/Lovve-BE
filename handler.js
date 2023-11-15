@@ -60,6 +60,7 @@ app.use("/", require("./backend/routes/reportUserRoute"));
 app.use("/support", require("./backend/routes/supportRoute"));
 app.use("/privacyPolicy", require("./backend/routes/privacyPolicyRoute"));
 app.use("/terms", require("./backend/routes/termsRoute"));
+app.use("/", require("./backend/routes/subscriptionRoutes"));
 
 app.use("/file", require("./backend/routes/fileHandlingRouter"));
 app.use(
