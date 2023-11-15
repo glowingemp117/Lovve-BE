@@ -29,8 +29,7 @@ const getProfile = async (user_id) => {
     const user = await User.findById(user_id)
       .populate("attachments")
       .populate("country");
-    // .populate("likes")
-    // .populate("profilestatuses");
+    
     if (!user) {
       throw new Error("Invalid user_id found");
     } else {

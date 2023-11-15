@@ -50,13 +50,17 @@ morganBody(app, {
 app.use(cors());
 app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.resolve("uploads")));
+app.use(express.static(path.resolve("backend/uploads")));
 
 app.use("/auth", require("./backend/routes/userRoutes"));
 app.use("/countries", require("./backend/routes/countriesRoutes"));
 app.use("/uploadFile", require("./backend/routes/attachmentRoute"));
-app.use("/addLike", require("./backend/routes/profileLiked"));
+app.use("/", require("./backend/routes/profileLiked"));
+app.use("/", require("./backend/routes/reportUserRoute"));
 app.use("/support", require("./backend/routes/supportRoute"));
+app.use("/privacyPolicy", require("./backend/routes/privacyPolicyRoute"));
+app.use("/terms", require("./backend/routes/termsRoute"));
+
 app.use("/file", require("./backend/routes/fileHandlingRouter"));
 app.use(
   "/conversation",

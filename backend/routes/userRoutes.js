@@ -20,6 +20,10 @@ const {
   verifyOtp,
   resendOtp,
   deleteAccount,
+  getLoginProfile,
+  profileUpdate,
+  getUserById,
+  updateConfiguration
 } = require("../controllers/userController");
 const { protect } = require("../middleware/authMiddleware");
 router
@@ -38,6 +42,10 @@ router
   .post("/signup/verify", preSignupVerification)
   .post("/socket", protect, testSocketio)
   .get("/home", getAllUsers)
+  .get("/profile", getUserById)
+  .patch("/updateConfiguration",protect,updateConfiguration)
+  .put("/profileUpdate", protect, profileUpdate)
+  .get("/me", protect, getLoginProfile)
   .get("/faq", getFaq)
   .get("/privacy", getPrivacy)
   .get("/terms", getTerms)
