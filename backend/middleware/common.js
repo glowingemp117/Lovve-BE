@@ -26,6 +26,35 @@ const successResponse = (
       .json({ status: statusCode, message: Message, data: Body });
   }
 };
+
+const successResponseVerifyOtp = (
+  statusCode = 200,
+  Message,
+  Body,
+  token,
+  res,
+  total_pages = null
+) => {
+  // const date = moment().format('YYYY-MM-DD')
+  // const accessLogStream = fs.createWriteStream(path.join(__dirname + '/backend/logs/', `access_${date}.log`), { flags: 'a' })
+  if (total_pages != null) {
+    return res.status(statusCode).json({
+      status: statusCode,
+      message: Message,
+      total_pages: total_pages,
+      data: Body,
+      accesstoken: token,
+    });
+  } else {
+    return res.status(statusCode).json({
+      status: statusCode,
+      message: Message,
+      data: Body,
+      accesstoken: token,
+    });
+  }
+};
+
 const PrintError = (statusCode = 400, Message, res) => {
   return res.status(statusCode).json({ status: statusCode, message: Message });
   // return res.status(statusCode).json({ status: statusCode, message: Message });
@@ -171,6 +200,7 @@ const sendNotification = async (user_id, notification_obj) => {
 
 module.exports = {
   successResponse,
+  successResponseVerifyOtp,
   PrintError,
   SuccessWithoutBody,
   Status205,

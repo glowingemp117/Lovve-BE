@@ -5,6 +5,7 @@ const {
   PrintError,
   verifyrequiredparams,
   sendNotification,
+  successResponseVerifyOtp,
 } = require("../middleware/common");
 const User = require("../schemas/User");
 const attachment = require("../schemas/attachments");
@@ -34,7 +35,6 @@ const registerUser = asyncHandler(async (req, res) => {
       gender,
       selfie_id,
       attachments,
-      fcm_token,
       device_type,
       timezone,
       user_type,
@@ -52,7 +52,6 @@ const registerUser = asyncHandler(async (req, res) => {
         "country",
         "selfie_id",
         "attachments",
-        "fcm_token",
         "device_type",
         "timezone",
         "user_type",
@@ -78,7 +77,6 @@ const registerUser = asyncHandler(async (req, res) => {
     //   gender,
     //   selfie_id,
     //   attachments: attachments,
-    //   fcm_token,
     //   device_type,
     //   user_type,
     //   timezone,
@@ -97,7 +95,6 @@ const registerUser = asyncHandler(async (req, res) => {
           gender: gender,
           selfie_id: selfie_id,
           attachments: attachments,
-          fcm_token: fcm_token,
           device_type: device_type,
           user_type: user_type,
           timezone: timezone,
@@ -275,13 +272,12 @@ const verifyOtp = asyncHandler(async (req, res) => {
           },
         ]);
         const accesstoken = generateToken(user._id, user.name, user.email);
-        return successResponse(
+        const data = aggregatedUserData[0];
+        return successResponseVerifyOtp(
           200,
           "Logged in successfully",
-          {
-            aggregatedUserData,
-            accesstoken,
-          },
+          data,
+          accesstoken,
           res
         );
       }
@@ -662,18 +658,18 @@ const profileUpdate = asyncHandler(async (req, response) => {
 const updateConfiguration = asyncHandler(async (req, res) => {
   try {
     const { _id } = req.user; // Assuming you include userId in the token during authentication
-    const { fcm_token, device_type, timezone } = req.body;
+    const { device_id, device_type, timezone } = req.body;
 
     await verifyrequiredparams(
       400,
       req.body,
-      ["fcm_token", "device_type", "timezone"],
+      ["device_id", "device_type", "timezone"],
       res
     );
     // Update user document
     const updatedUser = await User.findByIdAndUpdate(
       _id,
-      { fcm_token, device_type, timezone },
+      { device_id, device_type, timezone },
       { new: true }
     );
 

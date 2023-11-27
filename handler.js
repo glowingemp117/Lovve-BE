@@ -63,11 +63,7 @@ app.use("/terms", require("./backend/routes/termsRoute"));
 app.use("/", require("./backend/routes/subscriptionRoutes"));
 
 app.use("/file", require("./backend/routes/fileHandlingRouter"));
-app.use(
-  "/conversation",
-
-  require("./backend/routes/conversationRoutes")
-);
+app.use("/conversation", require("./backend/routes/conversationRoutes"));
 app.use(errorHandler);
 app.use((req, res, next) => {
   return res.status(404).json({

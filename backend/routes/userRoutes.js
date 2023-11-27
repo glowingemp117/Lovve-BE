@@ -23,14 +23,14 @@ const {
   getLoginProfile,
   profileUpdate,
   getUserById,
-  updateConfiguration
+  updateConfiguration,
 } = require("../controllers/userController");
 const { protect } = require("../middleware/authMiddleware");
 router
   .post("/signup", registerUser)
   .post("/login", loginUser)
   .post("/resendOtp", resendOtp)
-  .post("/verifyotp", verifyOtp)
+  .post("/verifyOtp", verifyOtp)
   .put("/changepassword", protect, changePassword)
   .delete("/deleteAccount", protect, deleteAccount)
   .post("/logout", protect, logout)
@@ -43,7 +43,7 @@ router
   .post("/socket", protect, testSocketio)
   .get("/home", getAllUsers)
   .get("/profile", getUserById)
-  .patch("/updateConfiguration",protect,updateConfiguration)
+  .patch("/updateConfiguration", protect, updateConfiguration)
   .put("/profileUpdate", protect, profileUpdate)
   .get("/me", protect, getLoginProfile)
   .get("/faq", getFaq)

@@ -12,7 +12,6 @@ const UserSchema = new mongoose.Schema(
     gender: { type: String, default: "" },
     selfie_id: { type: String, default: "" },
     attachments: [{ type: mongoose.Schema.Types.ObjectId, ref: "attachments" }],
-    fcm_token: { type: String, default: "" },
     device_type: { type: String, default: "" },
     timezone: { type: String, default: "" },
     user_type: { type: Number, default: 1 },
