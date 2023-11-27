@@ -30,6 +30,62 @@ const successResponse = (
 const successResponseVerifyOtp = (
   statusCode = 200,
   Message,
+  newUser,
+  res,
+  total_pages = null
+) => {
+  // const date = moment().format('YYYY-MM-DD')
+  // const accessLogStream = fs.createWriteStream(path.join(__dirname + '/backend/logs/', `access_${date}.log`), { flags: 'a' })
+  if (total_pages != null) {
+    return res.status(statusCode).json({
+      status: statusCode,
+      message: Message,
+      total_pages: total_pages,
+      new_user: newUser,
+    });
+  } else {
+    return res.status(statusCode).json({
+      status: statusCode,
+      message: Message,
+      new_user: newUser,
+    });
+  }
+};
+
+const successResponseWithToken = (
+  statusCode = 200,
+  Message,
+  newUser,
+  Body,
+  token,
+  res,
+  total_pages = null
+) => {
+  // const date = moment().format('YYYY-MM-DD')
+  // const accessLogStream = fs.createWriteStream(path.join(__dirname + '/backend/logs/', `access_${date}.log`), { flags: 'a' })
+  if (total_pages != null) {
+    return res.status(statusCode).json({
+      status: statusCode,
+      message: Message,
+      total_pages: total_pages,
+      new_user: newUser,
+      data: Body,
+      accesstoken: token,
+    });
+  } else {
+    return res.status(statusCode).json({
+      status: statusCode,
+      message: Message,
+      new_user: newUser,
+      data: Body,
+      accesstoken: token,
+    });
+  }
+};
+
+const successResponseSignup = (
+  statusCode = 200,
+  Message,
   Body,
   token,
   res,
@@ -200,7 +256,9 @@ const sendNotification = async (user_id, notification_obj) => {
 
 module.exports = {
   successResponse,
+  successResponseWithToken,
   successResponseVerifyOtp,
+  successResponseSignup,
   PrintError,
   SuccessWithoutBody,
   Status205,

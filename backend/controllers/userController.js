@@ -5,7 +5,9 @@ const {
   PrintError,
   verifyrequiredparams,
   sendNotification,
+  successResponseWithToken,
   successResponseVerifyOtp,
+  successResponseSignup,
 } = require("../middleware/common");
 const User = require("../schemas/User");
 const attachment = require("../schemas/attachments");
@@ -151,13 +153,22 @@ const registerUser = asyncHandler(async (req, res) => {
       //     }
       // };
       // await sendNotification(user._id, notification_obj);
-      successResponse(
+      // successResponse(
+      //   201,
+      //   "Account created successfully",
+      //   {
+      //     ...profile,
+      //     accesstoken,
+      //   },
+      //   res
+      // );
+      const { new_user, ...profileWithoutNewUser } = profile;
+
+      return successResponseSignup(
         201,
-        "Account created successfully",
-        {
-          ...profile,
-          accesstoken,
-        },
+        "Logged in successfully",
+        profileWithoutNewUser,
+        accesstoken,
         res
       );
     }
@@ -211,12 +222,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
     }
     if (user.otp === otp) {
       if (user.name === "") {
-        return successResponse(
-          200,
-          "Verify Otp",
-          { new_user: user.new_user },
-          res
-        );
+        return successResponseVerifyOtp(200, "Verify Otp", user.new_user, res);
       } else {
         // return successResponse(200, "Verified successfully", user, res);
         const aggregatedUserData = await User.aggregate([
@@ -273,10 +279,15 @@ const verifyOtp = asyncHandler(async (req, res) => {
         ]);
         const accesstoken = generateToken(user._id, user.name, user.email);
         const data = aggregatedUserData[0];
-        return successResponseVerifyOtp(
+        // if ("new_user" in data) {
+        //   delete data.new_user;
+        // }
+        const { new_user, ...dataWithoutNewUser } = data;
+        return successResponseWithToken(
           200,
           "Logged in successfully",
-          data,
+          data.new_user,
+          dataWithoutNewUser,
           accesstoken,
           res
         );
