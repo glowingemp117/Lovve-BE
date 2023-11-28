@@ -16,20 +16,13 @@ const addAttachment = asyncHandler(async (req, res) => {
     const file = req.file;
     // const { name, url, type } = req.body;
     // const filePath = req.file.path;
-    await Attachment.create({
+    const attachment = await Attachment.create({
       name: file.originalname,
       url: file.path.toString(),
       type: req.body.type,
     });
 
-    // const savedAttachment = await attachment.sa  e();
-    return successResponse(
-      201,
-      "Upload successfully",
-      // savedAttachment,
-      "ok",
-      res
-    );
+    return successResponse(201, "Upload successfully", attachment, res);
   } catch (error) {
     console.error("Error adding attachment:", error);
 

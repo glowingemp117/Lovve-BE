@@ -50,7 +50,7 @@ morganBody(app, {
 app.use(cors());
 app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.resolve("backend/uploads")));
+app.use("/backend/uploads", express.static(path.join(__dirname, "backend/uploads")));
 
 app.use("/auth", require("./backend/routes/userRoutes"));
 app.use("/countries", require("./backend/routes/countriesRoutes"));
