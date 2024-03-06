@@ -64,6 +64,7 @@ const registerUser = asyncHandler(async (req, res) => {
     let emaile = email.toLowerCase();
     const userExists = await User.findOne({ email: emaile });
 
+
     // if (userExists) {
     //   throw new Error("User already exists");
     // }
@@ -107,6 +108,7 @@ const registerUser = asyncHandler(async (req, res) => {
       }
     );
 
+   
     // if (user)
     if (!userExists) {
       errorOccurred = true;
@@ -431,8 +433,8 @@ async function getAllUsers(req, res) {
       {
         $lookup: {
           from: "attachments",
-          localField: "_id",
-          foreignField: "user_id",
+          localField: "attachments",
+          foreignField: "_id",
           as: "attachments",
         },
       },
@@ -513,7 +515,7 @@ async function getAllUsers(req, res) {
           attachments: user.attachments.map((attachment) => ({
             id: attachment._id,
             name: attachment.name,
-            url: attachment.url,
+            url: process.env.BASE_URL+attachment.url,
             type: attachment.type,
           })),
         },
