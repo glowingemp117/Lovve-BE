@@ -8,6 +8,7 @@ const {
   logout,
   forgotpassword,
   validatepin,
+  approveUser,
   resetpassword,
   updateTimeZone,
   preSignupCheck,
@@ -36,6 +37,7 @@ router
   .post("/logout", protect, logout)
   .put("/forgotpassword", forgotpassword)
   .put("/validatepin", validatepin)
+  .put("/approveUser", protect, approveUser)
   .put("/resetpassword", resetpassword)
   .put("/timezone", protect, updateTimeZone)
   .post("/signup/pre", preSignupCheck)

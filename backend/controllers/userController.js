@@ -102,6 +102,7 @@ const registerUser = asyncHandler(async (req, res) => {
           timezone: timezone,
           device_id: device_id,
           bio: bio,
+          new_user: false,
         },
       }
     );
@@ -323,6 +324,43 @@ const resendOtp = asyncHandler(async (req, res) => {
 
   return SuccessWithoutBody(200, "OTP code sent successfully", res);
 });
+
+// verify account
+
+const approveUser = asyncHandler(async (req, response) => {
+  try {
+    const { _id } = req.user;
+    const user = await User.findById(_id);
+
+    // if user not found throw error
+    if (!user) {
+      throw new Error("user not found");
+    } else {
+    
+      const updateuser = await User.findByIdAndUpdate(
+        _id,
+        {
+          isVerify: true,
+          new_user: false,
+          name: "John ali"
+        },
+        { new: true }
+      );
+      return successResponse(
+        200,
+        "User approved successfully.",
+        updateuser,
+        response,
+        "SUCCESS"
+      );
+    }
+  } catch (err) {
+   return PrintError(403, err.message, [], response, "FORBIDDEN");
+  }
+});
+
+
+
 
 const deleteAccount = asyncHandler(async (req, res) => {
   try {
@@ -1166,6 +1204,7 @@ module.exports = {
   logout,
   forgotpassword,
   validatepin,
+  approveUser,
   resetpassword,
   updateTimeZone,
   preSignupCheck,
