@@ -396,6 +396,7 @@ const deleteAccount = asyncHandler(async (req, res) => {
 
 //home love
 async function getAllUsers(req, res) {
+  console.log("req.query.page  ----------------->", req.query.page)
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.per_page) || 3;
@@ -425,8 +426,8 @@ async function getAllUsers(req, res) {
     const lastPage = Math.ceil(totalUsersCount / limit);
 
     const aggregatedUsers = await User.aggregate([
-      { $match: { country: new mongoose.Types.ObjectId(country_id) } },
-      { $match: { age: ageFilter } }, // Apply age range filtering
+      // { $match: { country: new mongoose.Types.ObjectId(country_id) } },
+      // { $match: { age: ageFilter } }, // Apply age range filtering
       {
         $lookup: {
           from: "attachments",
@@ -474,20 +475,22 @@ async function getAllUsers(req, res) {
           path: "$likes",
         },
       },
-      {
-        $lookup: {
-          from: "relationdetails",
-          localField: "_id",
-          foreignField: "likedBy",
-          as: "relation_detail",
-        },
-      },
-      {
-        $unwind: {
-          path: "$relation_detail",
-        },
-      },
+      // {
+      //   $lookup: {
+      //     from: "relationdetails",
+      //     localField: "_id",
+      //     foreignField: "likedBy",
+      //     as: "relation_detail",
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$relation_detail",
+      //   },
+      // },
     ]);
+
+    console.log("aggregatedUsers  -------------------->", aggregatedUsers)
 
     if (aggregatedUsers.length === 0) {
       return res.status(404).json({ status: 400, message: "No Data found" });

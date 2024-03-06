@@ -53,6 +53,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/backend/uploads", express.static(path.join(__dirname, "backend/uploads")));
 
 app.use("/auth", require("./backend/routes/userRoutes"));
+app.use("/", require("./backend/routes/homeRoutes"));
 app.use("/countries", require("./backend/routes/countriesRoutes"));
 app.use("/uploadFile", require("./backend/routes/attachmentRoute"));
 app.use("/", require("./backend/routes/profileLiked"));
