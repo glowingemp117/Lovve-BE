@@ -545,20 +545,21 @@ async function getAllUsers(req, res) {
 
 const getUserById = asyncHandler(async (req, res) => {
   try {
-    const userId = req.query.userId;
+    const userId = req.query.id;
 
     // Ensure the requested user ID is valid
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
+    console.log("User --------------->", userId)
     const aggregatedUser = await User.aggregate([
       { $match: { _id: new mongoose.Types.ObjectId(userId) } },
       {
         $lookup: {
           from: "attachments",
-          localField: "_id",
-          foreignField: "user_id",
+          localField: "attachments",
+          foreignField: "_id",
           as: "attachments",
         },
       },
@@ -640,7 +641,7 @@ const getUserById = asyncHandler(async (req, res) => {
         attachments: user.attachments.map((attachment) => ({
           id: attachment._id,
           name: attachment.name,
-          url: attachment.url,
+          url:  process.env.BASE_URL + attachment.url,
           type: attachment.type,
         })),
 

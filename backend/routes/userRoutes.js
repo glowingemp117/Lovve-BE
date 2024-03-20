@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const {
   registerUser,
-  getAllUsers,
   loginUser,
   changePassword,
   logout,
@@ -13,7 +12,6 @@ const {
   updateTimeZone,
   preSignupCheck,
   preSignupVerification,
-  testSocketio,
   getFaq,
   getPrivacy,
   getTerms,
@@ -22,9 +20,6 @@ const {
   resendOtp,
   deleteAccount,
   getLoginProfile,
-  profileUpdate,
-  getUserById,
-  updateConfiguration,
 } = require("../controllers/userController");
 const { protect } = require("../middleware/authMiddleware");
 router
@@ -42,11 +37,6 @@ router
   .put("/timezone", protect, updateTimeZone)
   .post("/signup/pre", preSignupCheck)
   .post("/signup/verify", preSignupVerification)
-  .post("/socket", protect, testSocketio)
-  .get("/home", getAllUsers)
-  .get("/profile", getUserById)
-  .patch("/updateConfiguration", protect, updateConfiguration)
-  .put("/profileUpdate", protect, profileUpdate)
   .get("/me", protect, getLoginProfile)
   .get("/faq", getFaq)
   .get("/privacy", getPrivacy)
