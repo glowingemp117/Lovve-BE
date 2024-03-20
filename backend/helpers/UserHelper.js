@@ -1,4 +1,5 @@
 const User = require("../schemas/User");
+const attachments = require("../schemas/attachments");
 const like = require("../schemas/likes");
 const profilestatus = require("../schemas/profile_stats");
 
@@ -33,6 +34,8 @@ const getProfile = async (user_id) => {
     if (!user) {
       throw new Error("Invalid user_id found");
     } else {
+
+      console.log("User------>",user)
       // return user._doc;
       const userProfile = user._doc;
 
@@ -43,6 +46,8 @@ const getProfile = async (user_id) => {
 
       // Aggregate like data
       userProfile.like = await like.findOne({ user_id: user_id });
+
+      userProfile.selfie.url =`${process.env.BASE_URL}${user.selfie?.url}`
 
       return userProfile;
     }

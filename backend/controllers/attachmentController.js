@@ -14,7 +14,7 @@ const addAttachment = asyncHandler(async (req, res) => {
     //   return res.status(400).json({ status: 400, message: "File is required" });
     // }
     const file = req.file;
-    console.log("file----------->", file)
+    console.log("file----------->", file);
     // const { name, url, type } = req.body;
     // const filePath = req.file.path;
     const attachment = await Attachment.create({
@@ -23,6 +23,7 @@ const addAttachment = asyncHandler(async (req, res) => {
       type: req.body.type,
     });
 
+    attachment.url = process.env.BASE_URL + attachment.url
     return successResponse(201, "Upload successfully", attachment, res);
   } catch (error) {
     console.error("Error adding attachment:", error);

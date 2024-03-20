@@ -25,6 +25,7 @@ const { sendEmail } = require("../middleware/sendEmail");
 const { getCode } = require("../helpers/UserHelper");
 const { verifyGenerateCode } = require("../helpers/UserHelper");
 const mongoose = require("mongoose");
+const attachments = require("../schemas/attachments");
 
 //Love project auth
 const registerUser = asyncHandler(async (req, res) => {
@@ -35,7 +36,7 @@ const registerUser = asyncHandler(async (req, res) => {
       age,
       country,
       gender,
-      selfie_id,
+      selfie,
       attachments,
       device_type,
       timezone,
@@ -52,7 +53,7 @@ const registerUser = asyncHandler(async (req, res) => {
         "age",
         "gender",
         "country",
-        "selfie_id",
+        "selfie",
         "attachments",
         "device_type",
         "timezone",
@@ -63,7 +64,6 @@ const registerUser = asyncHandler(async (req, res) => {
     );
     let emaile = email.toLowerCase();
     const userExists = await User.findOne({ email: emaile });
-
 
     // if (userExists) {
     //   throw new Error("User already exists");
@@ -78,7 +78,7 @@ const registerUser = asyncHandler(async (req, res) => {
     //   age,
     //   country: country,
     //   gender,
-    //   selfie_id,
+    //   selfie,
     //   attachments: attachments,
     //   device_type,
     //   user_type,
@@ -88,7 +88,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // });
 
     const user = await User.updateOne(
-      { _id: userExists._id },
+      { _id: userExists?._id },
       {
         $set: {
           name: name,
@@ -96,7 +96,7 @@ const registerUser = asyncHandler(async (req, res) => {
           age: age,
           country: country,
           gender: gender,
-          selfie_id: selfie_id,
+          selfie: selfie,
           attachments: attachments,
           device_type: device_type,
           user_type: user_type,
@@ -108,7 +108,8 @@ const registerUser = asyncHandler(async (req, res) => {
       }
     );
 
-   
+    console.log("userExists ------------------->", userExists);
+
     // if (user)
     if (!userExists) {
       errorOccurred = true;
@@ -282,6 +283,10 @@ const verifyOtp = asyncHandler(async (req, res) => {
         ]);
         const accesstoken = generateToken(user._id, user.name, user.email);
         const data = aggregatedUserData[0];
+
+        const selfieAtt = await attachments.findOne({ _id: user.selfie });
+        data.selfie = `${process.env.BASE_URL}${selfieAtt.url}`;
+
         // if ("new_user" in data) {
         //   delete data.new_user;
         // }
@@ -338,13 +343,12 @@ const approveUser = asyncHandler(async (req, response) => {
     if (!user) {
       throw new Error("user not found");
     } else {
-    
       const updateuser = await User.findByIdAndUpdate(
         _id,
         {
           isVerify: true,
           new_user: false,
-          name: "John ali"
+          name: "John ali",
         },
         { new: true }
       );
@@ -357,12 +361,9 @@ const approveUser = asyncHandler(async (req, response) => {
       );
     }
   } catch (err) {
-   return PrintError(403, err.message, [], response, "FORBIDDEN");
+    return PrintError(403, err.message, [], response, "FORBIDDEN");
   }
 });
-
-
-
 
 const deleteAccount = asyncHandler(async (req, res) => {
   try {
@@ -398,7 +399,7 @@ const deleteAccount = asyncHandler(async (req, res) => {
 
 //home love
 async function getAllUsers(req, res) {
-  console.log("req.query.page  ----------------->", req.query.page)
+  console.log("req.query.page  ----------------->", req.query.page);
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.per_page) || 3;
@@ -492,7 +493,7 @@ async function getAllUsers(req, res) {
       // },
     ]);
 
-    console.log("aggregatedUsers  -------------------->", aggregatedUsers)
+    console.log("aggregatedUsers  -------------------->", aggregatedUsers);
 
     if (aggregatedUsers.length === 0) {
       return res.status(404).json({ status: 400, message: "No Data found" });
@@ -505,17 +506,18 @@ async function getAllUsers(req, res) {
           id: user._id,
           name: user.name,
           age: user.age,
+          bio: user.bio ? user.bio : "",
           country: {
             id: user.country._id,
             name: user.country.name,
             flag: user.country.flagUrl,
           },
           gender: user.gender,
-          selfie: user.selfie_id,
+          selfie: user.selfie,
           attachments: user.attachments.map((attachment) => ({
             id: attachment._id,
             name: attachment.name,
-            url: process.env.BASE_URL+attachment.url,
+            url: process.env.BASE_URL + attachment.url,
             type: attachment.type,
           })),
         },
@@ -634,7 +636,7 @@ const getUserById = asyncHandler(async (req, res) => {
           flag: user.country.flagUrl,
         },
         gender: user.gender,
-        selfie: user.selfie_id,
+        selfie: user.selfie,
         attachments: user.attachments.map((attachment) => ({
           id: attachment._id,
           name: attachment.name,
@@ -665,6 +667,12 @@ const getLoginProfile = asyncHandler(async (req, response) => {
     if (!user) {
       throw new Error("user not found");
     }
+
+    // Attach base URL
+    user.attachments.forEach((attachment) => {
+      attachment.url = process.env.BASE_URL + attachment.url;
+    });
+
     return successResponse(
       200,
       "Login User Found Successfully",
@@ -678,7 +686,7 @@ const getLoginProfile = asyncHandler(async (req, response) => {
 
 const profileUpdate = asyncHandler(async (req, response) => {
   try {
-    const { selfie_id, attachments } = req.body;
+    const { selfie, attachments } = req.body;
 
     const userId = req.user._id;
     const user = await getProfile(userId);
@@ -690,7 +698,7 @@ const profileUpdate = asyncHandler(async (req, response) => {
       const updateuser = await User.findByIdAndUpdate(
         userId,
         {
-          selfie_id: selfie_id,
+          selfie: selfie,
           attachments: attachments,
         },
         { new: true }

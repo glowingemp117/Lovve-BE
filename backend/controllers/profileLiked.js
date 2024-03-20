@@ -153,7 +153,7 @@ const getLike = asyncHandler(async (req, res) => {
       .or([{ liked: true }, { liked: false }])
       .populate({
         path: "likedTo",
-        select: "name age gender country selfie_id",
+        select: "name age gender country selfie",
         populate: {
           path: "country",
           select: "id name flag",
@@ -172,7 +172,7 @@ const getLike = asyncHandler(async (req, res) => {
         age: user.likedTo.age,
         country: user.likedTo.country,
         gender: user.likedTo.gender,
-        selfie_id: user.likedTo.selfie_id,
+        selfie: user.likedTo.selfie,
       },
       relation_details: {
         matched: user.matched,
@@ -218,7 +218,7 @@ const getVisitor = asyncHandler(async (req, res) => {
       .or([{ visited: true }, { visited: false }])
       .populate({
         path: "likedTo",
-        select: "name age gender country selfie_id",
+        select: "name age gender country selfie",
         populate: {
           path: "country",
           select: "id name flag",
@@ -237,7 +237,7 @@ const getVisitor = asyncHandler(async (req, res) => {
         age: user.likedTo.age,
         country: user.likedTo.country,
         gender: user.likedTo.gender,
-        selfie_id: user.likedTo.selfie_id,
+        selfie: user.likedTo.selfie,
       },
       relation_details: {
         matched: user.matched,
@@ -283,7 +283,7 @@ const getMatches = asyncHandler(async (req, res) => {
       .or([{ matched: true }, { matched: false }])
       .populate({
         path: "likedTo",
-        select: "name age gender country selfie_id",
+        select: "name age gender country selfie",
         populate: {
           path: "country",
           select: "id name flag",
@@ -302,7 +302,7 @@ const getMatches = asyncHandler(async (req, res) => {
         age: user.likedTo.age,
         country: user.likedTo.country,
         gender: user.likedTo.gender,
-        selfie_id: user.likedTo.selfie_id,
+        selfie: user.likedTo.selfie,
       },
       relation_details: {
         matched: user.matched,
@@ -346,7 +346,7 @@ const getMatched = asyncHandler(async (req, res) => {
     })
       .populate({
         path: "likedTo",
-        select: "name age gender selfie country selfie_id",
+        select: "name age gender selfie country selfie",
         populate: {
           path: "country",
           select: "id name flag",
@@ -354,7 +354,7 @@ const getMatched = asyncHandler(async (req, res) => {
       })
       .populate({
         path: "likedBy",
-        select: "name age gender selfie_id country",
+        select: "name age gender selfie country",
         populate: {
           path: "country",
           select: "id name flag",
@@ -369,7 +369,7 @@ const getMatched = asyncHandler(async (req, res) => {
         age: user.likedBy.age,
         country: user.likedBy.country,
         gender: user.likedBy.gender,
-        selfie_id: user.likedBy.selfie_id,
+        selfie: user.likedBy.selfie,
       },
       potential_match: {
         id: user.likedTo._id,
@@ -377,7 +377,7 @@ const getMatched = asyncHandler(async (req, res) => {
         age: user.likedTo.age,
         country: user.likedTo.country,
         gender: user.likedTo.gender,
-        selfie_id: user.likedTo.selfie_id,
+        selfie: user.likedTo.selfie,
       },
     }));
 

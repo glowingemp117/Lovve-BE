@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema(
     age: { type: Number, default: "0" },
     country: { type: mongoose.Schema.Types.ObjectId, ref: "countries" },
     gender: { type: String, default: "" },
-    selfie_id: { type: String, default: "" },
+    selfie: { type: Object, default: {} },
     attachments: [{ type: mongoose.Schema.Types.ObjectId, ref: "attachments" }],
     device_type: { type: String, default: "" },
     timezone: { type: String, default: "" },
