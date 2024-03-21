@@ -44,6 +44,9 @@ const registerUser = asyncHandler(async (req, res) => {
       device_id,
       bio,
     } = req.body;
+
+    // console.log("Register-------->", req.body)
+    // return
     await verifyrequiredparams(
       400,
       req.body,
@@ -62,6 +65,7 @@ const registerUser = asyncHandler(async (req, res) => {
       ],
       res
     );
+
     let emaile = email.toLowerCase();
     const userExists = await User.findOne({ email: emaile });
 
@@ -284,8 +288,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
         const accesstoken = generateToken(user._id, user.name, user.email);
         const data = aggregatedUserData[0];
 
-        const selfieAtt = await attachments.findOne({ _id: user.selfie });
-        data.selfie = `${process.env.BASE_URL}${selfieAtt.url}`;
+        data.selfie.url = process.env.BASE_URL + data.selfie.url;
 
         // if ("new_user" in data) {
         //   delete data.new_user;
@@ -314,7 +317,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error", error });
   }
 });
 
@@ -407,20 +410,18 @@ async function getAllUsers(req, res) {
 
     const startIndex = (page - 1) * limit;
 
-    const user = await User.find().skip(startIndex).limit(limit);
-
     const ageFilter = {};
     if (age_from && age_to) {
       ageFilter.$gte = parseInt(age_from); // Greater than or equal to ageFrom
       ageFilter.$lte = parseInt(age_to); // Less than or equal to ageTo
     }
 
-    const userFiltered = await User.find()
-      .skip(startIndex)
-      .limit(limit)
+    const users = await User.find()
       .where("age")
       .gte(ageFilter.$gte)
-      .lte(ageFilter.$lte);
+      .lte(ageFilter.$lte)
+      .skip(startIndex)
+      .limit(limit);
 
     // Calculate the total number of users (for example)
     const totalUsersCount = await User.countDocuments();
@@ -493,11 +494,9 @@ async function getAllUsers(req, res) {
       // },
     ]);
 
-    console.log("aggregatedUsers  -------------------->", aggregatedUsers);
 
-    if (aggregatedUsers.length === 0) {
-      return res.status(404).json({ status: 400, message: "No Data found" });
-    }
+    console.log("total users========>", aggregatedUsers.length);
+
     const response = {
       status: 200,
       message: "Fetched successfully",
@@ -513,7 +512,12 @@ async function getAllUsers(req, res) {
             flag: user.country.flagUrl,
           },
           gender: user.gender,
-          selfie: user.selfie,
+          selfie: {
+            name: user.selfie.name,
+            url: process.env.BASE_URL + user.selfie.url,
+            type: user.selfie.type,
+            id: user.selfie._id,
+          },
           attachments: user.attachments.map((attachment) => ({
             id: attachment._id,
             name: attachment.name,
@@ -538,10 +542,10 @@ async function getAllUsers(req, res) {
     return res.status(200).json(response);
   } catch (error) {
     console.error("error fetching users:", error);
-
     res.status(500).json({ message: "server error" });
   }
 }
+
 
 const getUserById = asyncHandler(async (req, res) => {
   try {
@@ -552,7 +556,7 @@ const getUserById = asyncHandler(async (req, res) => {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
-    console.log("User --------------->", userId)
+    console.log("User --------------->", userId);
     const aggregatedUser = await User.aggregate([
       { $match: { _id: new mongoose.Types.ObjectId(userId) } },
       {
@@ -623,7 +627,6 @@ const getUserById = asyncHandler(async (req, res) => {
     }
 
     const user = aggregatedUser[0];
-
     const response = {
       status: 200,
       message: "Fetched user successfully",
@@ -637,11 +640,16 @@ const getUserById = asyncHandler(async (req, res) => {
           flag: user.country.flagUrl,
         },
         gender: user.gender,
-        selfie: user.selfie,
+        selfie: {
+          id: user.selfie.id,
+          name: user.selfie.name,
+          type: user.selfie.type,
+          url:  process.env.BASE_URL+user.selfie.name,
+        },
         attachments: user.attachments.map((attachment) => ({
           id: attachment._id,
           name: attachment.name,
-          url:  process.env.BASE_URL + attachment.url,
+          url: process.env.BASE_URL + attachment.url,
           type: attachment.type,
         })),
 

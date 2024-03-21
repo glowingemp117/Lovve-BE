@@ -7,6 +7,7 @@ const {
   verifyrequiredparams,
   sendNotification,
 } = require("../middleware/common");
+const attachments = require("../schemas/attachments");
 
 const addAttachment = asyncHandler(async (req, res) => {
   try {
@@ -14,7 +15,9 @@ const addAttachment = asyncHandler(async (req, res) => {
     //   return res.status(400).json({ status: 400, message: "File is required" });
     // }
     const file = req.file;
-    console.log("file----------->", file);
+    // console.log("file----------->", file);
+    // console.log("type----------->", req.body.type);
+    // return
     // const { name, url, type } = req.body;
     // const filePath = req.file.path;
     const attachment = await Attachment.create({
@@ -23,8 +26,18 @@ const addAttachment = asyncHandler(async (req, res) => {
       type: req.body.type,
     });
 
-    attachment.url = process.env.BASE_URL + attachment.url
-    return successResponse(201, "Upload successfully", attachment, res);
+    const completeUrl = process.env.BASE_URL + attachment.url;
+    // Create a new object with renamed fields
+    const responseData = {
+      id: attachment._id, // Rename _id to id
+      name: attachment.name,
+      url: completeUrl,
+      file_storage_path: attachment.url,
+      type: attachment.type,
+      __v: attachment.__v,
+    };
+
+    return successResponse(201, "Uploaded successfully", responseData, res);
   } catch (error) {
     console.error("Error adding attachment:", error);
 
